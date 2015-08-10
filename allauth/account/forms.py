@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
 import warnings
@@ -59,16 +58,16 @@ class LoginForm(forms.Form):
     user = None
     error_messages = {
         'account_inactive':
-        _("Esta cuenta está inactiva."),
+        _("This account is currently inactive."),
 
         'email_password_mismatch':
-        _("El correo y/o contraseña que proporcionaste no es correcto."),
+        _("The e-mail address and/or password you specified are not correct."),
 
         'username_password_mismatch':
-        _("El correo y/o contraseña que proporcionaste no es correcto."),
+        _("The username and/or password you specified are not correct."),
 
         'username_email_password_mismatch':
-        _("El correo y/o contraseña que proporcionaste no es correcto.")
+        _("The login and/or password you specified are not correct.")
     }
 
     def __init__(self, *args, **kwargs):
@@ -298,8 +297,8 @@ class SignupForm(BaseSignupForm):
                 and "password2" in self.cleaned_data:
             if self.cleaned_data["password1"] \
                     != self.cleaned_data["password2"]:
-                raise forms.ValidationError(_("Debes escribir la misma contraseña"
-                                              " en ambos campos"))
+                raise forms.ValidationError(_("You must type the same password"
+                                              " each time."))
         return self.cleaned_data
 
     def save(self, request):
@@ -330,10 +329,10 @@ class AddEmailForm(UserForm):
         value = self.cleaned_data["email"]
         value = get_adapter().clean_email(value)
         errors = {
-            "this_account": _("Esa dirección de correo ya se encuentra asociada"
-                              " con esta cuenta."),
-            "different_account": _("Esa dirección de correo ya se encuentra asociada"
-                                   " con otra cuenta."),
+            "this_account": _("This e-mail address is already associated"
+                              " with this account."),
+            "different_account": _("This e-mail address is already associated"
+                                   " with another account."),
         }
         users = filter_users_by_email(value)
         on_this_account = [u for u in users if u.pk == self.user.pk]
@@ -354,14 +353,14 @@ class AddEmailForm(UserForm):
 
 class ChangePasswordForm(UserForm):
 
-    oldpassword = PasswordField(label=_("Contraseña Actual"))
-    password1 = SetPasswordField(label=_("Nueva Contraseña"))
-    password2 = PasswordField(label=_("Nueva Contraseña (otra vez)"))
+    oldpassword = PasswordField(label=_("Current Password"))
+    password1 = SetPasswordField(label=_("New Password"))
+    password2 = PasswordField(label=_("New Password (again)"))
 
     def clean_oldpassword(self):
         if not self.user.check_password(self.cleaned_data.get("oldpassword")):
-            raise forms.ValidationError(_("Escribe tu contraseña"
-                                          " actual."))
+            raise forms.ValidationError(_("Please type your current"
+                                          " password."))
         return self.cleaned_data["oldpassword"]
 
     def clean_password2(self):
@@ -369,8 +368,8 @@ class ChangePasswordForm(UserForm):
                 and "password2" in self.cleaned_data):
             if (self.cleaned_data["password1"]
                     != self.cleaned_data["password2"]):
-                raise forms.ValidationError(_("Debes escribir la misma contraseña"
-                                              " en ambos campos."))
+                raise forms.ValidationError(_("You must type the same password"
+                                              " each time."))
         return self.cleaned_data["password2"]
 
     def save(self):
@@ -387,8 +386,8 @@ class SetPasswordForm(UserForm):
                 and "password2" in self.cleaned_data):
             if (self.cleaned_data["password1"]
                     != self.cleaned_data["password2"]):
-                raise forms.ValidationError(_("Debes escribir la misma contraseña"
-                                              " en ambos campos."))
+                raise forms.ValidationError(_("You must type the same password"
+                                              " each time."))
         return self.cleaned_data["password2"]
 
     def save(self):
@@ -407,8 +406,8 @@ class ResetPasswordForm(forms.Form):
         email = get_adapter().clean_email(email)
         self.users = filter_users_by_email(email)
         if not self.users:
-            raise forms.ValidationError(_("La dirección de correo no está asignada"
-                                          " a ninguna cuenta"))
+            raise forms.ValidationError(_("The e-mail address is not assigned"
+                                          " to any user account"))
         return self.cleaned_data["email"]
 
     def save(self, request, **kwargs):
@@ -448,8 +447,8 @@ class ResetPasswordForm(forms.Form):
 
 class ResetPasswordKeyForm(forms.Form):
 
-    password1 = SetPasswordField(label=_("Nueva contraseña"))
-    password2 = PasswordField(label=_("Nueva contraseña (otra vez)"))
+    password1 = SetPasswordField(label=_("New Password"))
+    password2 = PasswordField(label=_("New Password (again)"))
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -462,8 +461,8 @@ class ResetPasswordKeyForm(forms.Form):
                 and "password2" in self.cleaned_data):
             if (self.cleaned_data["password1"]
                     != self.cleaned_data["password2"]):
-                raise forms.ValidationError(_("Debes escribir la misma contraseña"
-                                              " en cada campo."))
+                raise forms.ValidationError(_("You must type the same"
+                                              " password each time."))
         return self.cleaned_data["password2"]
 
     def save(self):
@@ -479,7 +478,7 @@ class UserTokenForm(forms.Form):
     token_generator = default_token_generator
 
     error_messages = {
-        'token_invalid': _('El token para cambiar la contraseña es inválido.'),
+        'token_invalid': _('The password reset token was invalid.'),
     }
 
     def _get_user(self, uidb36):
