@@ -20,11 +20,18 @@ logger = logging.getLogger(__name__)
 
 def fb_complete_login(request, app, token):
     provider = providers.registry.by_id(FacebookProvider.id)
+
+    import hashlib, hmac
+    _msg = bytes(token.token).encode('utf-8')
+    _key = bytes(app.secret).encode('utf-8')
+    appsecret_proof = hmac.new(_key, _msg, digestmod=hashlib.sha256).hexdigest()
+
     resp = requests.get(
         GRAPH_API_URL + '/me',
         params={
             'fields': ','.join(provider.get_fields()),
-            'access_token': token.token
+            'access_token': token.token,
+            'appsecret_proof' : appsecret_proof
         })
     resp.raise_for_status()
     extra_data = resp.json()
